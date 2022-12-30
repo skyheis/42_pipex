@@ -48,6 +48,8 @@
 	ft_free_matrix(cmd_mat);
 }*/
 
+
+/* questo funge no bonus ma funge
 void	ft_do_exec(char **cmd, char *file, int *pp, int is_main)
 {
 	int	fd_file;
@@ -84,6 +86,39 @@ int	main(int ac, char **av, char **envp)
 	{
 		cmd = ft_getcmd(av[2], envp);
 		ft_do_exec(cmd, av[1], pp, 0);
+	}
+	else
+	{
+		wait(NULL);
+		cmd = ft_getcmd(av[3], envp);
+		ft_do_exec(cmd, av[4], pp, 1);
+	}
+}*/
+
+
+
+
+
+
+int	main(int ac, char **av, char **envp)
+{
+	int	pp[2];
+	char **cmd;
+	//ac vale 5, meglio tenersi il valore okay
+	//ne copio uno e e lo abbasso di 2, primo spot utile sara il 3 (ultimo cmd)
+	//.  fai il pipe su cui il parent scrive
+	//.  finche (copia > 1)	sforketta /parent/ abbasa di uno , legge dal pipe del children
+	//.  e 
+	
+// porcamadonna devo fare un disegno mi sta fottendo la testa
+	
+	if (ac < 4)
+		return (1);
+	pipe(pp);
+	if(!fork())
+	{
+		cmd = ft_getcmd(av[2], envp);
+		ft_do_exec(cmd, av[1], pp, 0);
 		/*if (!fork())
 		{
 			fd_in = open(av[1], O_RDONLY);
@@ -112,6 +147,10 @@ int	main(int ac, char **av, char **envp)
 		ft_free_matrix(cmd);*/
 	}
 }
+
+
+
+
 
 /*int main(int argc, char **argv, char **envp)
 {
