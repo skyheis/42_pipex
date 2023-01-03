@@ -6,7 +6,7 @@
 /*   By: ggiannit <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/30 12:21:29 by ggiannit          #+#    #+#             */
-/*   Updated: 2022/12/30 12:24:09 by ggiannit         ###   ########.fr       */
+/*   Updated: 2023/01/03 13:02:50 by ggiannit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ char *ft_getpath(char *full_path, char *cmd)
 		i++;
 	}
 	if (!path_mat[i])
-		return (ft_free_null(&exec_path));
+		exec_path = ft_strjoin("/bin/", cmd);
 	ft_free_matrix(path_mat);
 	return (exec_path);
 }
@@ -62,8 +62,8 @@ char **ft_getcmd(char *cmd_str, char **envp)
 	cmd_mat = ft_split(cmd_str, ' ');
 	full_path = ft_getenv("PATH", envp);
 	full_path = ft_getpath(full_path, cmd_mat[0]);
-	if (!full_path)
-		return ((char **) ft_free_matrix(cmd_mat));
+	//if (!full_path)
+	//	return ((char **) ft_free_matrix(cmd_mat));
 	ft_free_null(&cmd_mat[0]);
 	cmd_mat[0] = full_path;
 	return (cmd_mat);
