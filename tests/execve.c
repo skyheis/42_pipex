@@ -6,7 +6,7 @@
 /*   By: ggiannit <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/16 11:03:09 by ggiannit          #+#    #+#             */
-/*   Updated: 2022/12/28 20:50:18 by ggiannit         ###   ########.fr       */
+/*   Updated: 2023/01/03 22:15:46 by ggiannit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,25 +22,35 @@
 
 int	main(void)
 {
-	char *av[] = {"/bin/cat", NULL};
+	char *av[] = {"/bin/catt", NULL};
 	//char *aw[] = {"/usr/bin/wc", NULL};
 	int	fd;
 	int pp[2];
+	int ppp;
+	int err;
+	int id;
 
 	fd = open("lol", O_RDONLY);
 	pipe(pp);
-	if (!fork())
+	id = fork();
+	if (!id)
 	{
+		ppp = dup(1);
 		dup2(fd, 0);
 		dup2(pp[1], 1);
-		execve(av[0], av, NULL);
+		err = execve(av[0], av, NULL);
+		perror("dale");
+		exit(err);
 	}
-	wait(NULL);
-	dup2(pp[0], STDIN_FILENO);
-	close(pp[1]);
-	execve(av[0], av, NULL);
-	close(pp[0]);
-	close(fd);
+	else
+	{
+		usleep(100);
+		waitpid(id, &err, WNOHANG);
+		printf("err is %i\n", err);
+		close(pp[1]);
+		close(pp[0]);
+		close(fd);
+	}
 }
 
 /*int	main(void)

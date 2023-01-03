@@ -6,55 +6,32 @@
 /*   By: ggiannit <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/28 09:57:39 by ggiannit          #+#    #+#             */
-/*   Updated: 2023/01/03 18:12:33 by ggiannit         ###   ########.fr       */
+/*   Updated: 2023/01/03 22:25:35 by ggiannit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-int	ft_get_heredoc(char *delimiter)
+int	ft_do_exec(char **cmd, int fd_in, int fd_out, char **envp)
 {
-	char	*nline;
-	size_t	delimiter_size;
-	int		fd_gg;
+	int	stat;
+	int	pid;
 
-	unlink("/tmp/ggiannit_ugly_pipex");
-	fd_gg = open("/tmp/ggiannit_ugly_pipex",
-			O_WRONLY | O_CREAT , 0644);
-	delimiter_size = ft_strlen(delimiter) + 1;
-	ft_putstr_fd("pipe heredoc> ", 1);
-	delimiter = ft_strjoin(delimiter, "\n");
-	nline = get_next_line(0);
-	while (ft_strncmp(delimiter, nline, delimiter_size))
-	{
-		ft_putstr_fd(nline, fd_gg);
-		ft_free_null(&nline);
-		ft_putstr_fd("pipe heredoc> ", 1);
-		while (!nline)
-			nline = get_next_line(0);
-	}
-	close(fd_gg);
-	ft_free_null(&nline);
-	ft_free_null(&delimiter);
-	return (open("/tmp/ggiannit_ugly_pipex", O_RDONLY));
-}
-
-int	ft_do_exec(char **cmd, int fd_in, int fd_out)
-{
-	if (!fork())
+	pid = fork();
+	if (!pid)
 	{
 		ft_redirect(fd_in, fd_out, -1);
-		execve(cmd[0], cmd, NULL);
+		stat = execve(cmd[0], cmd, envp);
 		perror("I guess it doesn't exist.. am I right? command non found");
-		close(fd_in);
-		close(fd_out);
-		exit(2);
+		ft_close_n_ret(fd_in, fd_out, -1, -2);
+		exit(stat);
 	}
-	close(fd_in);
-	close(fd_out);
+	ft_close_n_ret(fd_in, fd_out, -1, -2);
+	if (waitpid(pid, &stat, WNOHANG))
+		stat = 2;
 	wait(NULL);
 	ft_free_matrix(cmd);
-	return (1);
+	return (stat);
 }
 
 int	ft_pipez(int ac, char **av, char **envp, int fd_write)
@@ -77,13 +54,13 @@ int	ft_pipez(int ac, char **av, char **envp, int fd_write)
 	{
 		pipe(pp);
 		error = ft_pipez((ac - 1), av, envp, pp[1]);
-		if (!error)
-			return (ft_close_4(pp[1], pp[0], fd_write, -1));
+		if (error)
+			return (ft_close_n_ret(pp[1], pp[0], fd_write, error));
 	}
 	if (pp[1] != -1)
 		close(pp[1]);
 	cmd = ft_getcmd(av[ac], envp);
-	return (ft_do_exec(cmd, pp[0], fd_write));
+	return (ft_do_exec(cmd, pp[0], fd_write, envp));
 }
 
 int	main(int ac, char **av, char **envp)
@@ -107,7 +84,5 @@ int	main(int ac, char **av, char **envp)
 	close(fd_out);
 	if (!is_here)
 		unlink("/tmp/ggiannit_ugly_pipex");
-	if (!error)
-		return (3);
-	return (0);
+	return (error);
 }

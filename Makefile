@@ -6,7 +6,7 @@
 #    By: ggiannit <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/07 17:49:20 by ggiannit          #+#    #+#              #
-#    Updated: 2022/12/30 12:42:24 by ggiannit         ###   ########.fr        #
+#    Updated: 2023/01/03 22:03:06 by ggiannit         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,7 @@ INCLUDE = include
 DIRSRCS =
 DIROBJS = obj/
 
-FLSRCS = pipex_utils.c handle_fd_utils.c
+FLSRCS = pipex_utils.c handle_fd_utils.c use_heredoc.c
 
 FLOBJS = ${FLSRCS:.c=.o}
 
@@ -80,6 +80,8 @@ ${NAME}: starting ${OBJS}
 	@echo "$(YELLOW)Program created with $(WHITE)${CC}$(YELLOW) as $(CYAN)${PRNAME}$(DEF_COLOR)"
 	@echo ""
 
+bonus: all
+
 clean: libftclean
 	@echo "$(WHITE)\"wait.. is $(CYAN)${PRNAME}$(WHITE) all trash? 🧹\" $(DEF_COLOR)"
 	@${RM} ${OBJS}
@@ -106,5 +108,5 @@ re: fclean all
 starting:
 	@echo "$(WHITE)🧙as a wizard, I made appear your $(CYAN) $(PRNAME) $(WHITE)binary!🪄 💫$(DEF_COLOR)"
 
-.PHONY: all clean fclean re starting .c.o libft libftclean libftre exec
+.PHONY: all bonus clean fclean re starting .c.o libft libftclean libftre exec
 .SUFFIXES: .c .o 

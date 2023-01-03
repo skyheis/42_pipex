@@ -6,13 +6,13 @@
 /*   By: ggiannit <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/30 12:39:48 by ggiannit          #+#    #+#             */
-/*   Updated: 2023/01/03 11:43:46 by ggiannit         ###   ########.fr       */
+/*   Updated: 2023/01/03 21:52:31 by ggiannit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-int	ft_close_4(int fd1, int fd2, int fd3, int fd4)
+int	ft_close_n_ret(int fd1, int fd2, int fd3, int ret_num)
 {
 	if (fd1 != -1)
 		close(fd1);
@@ -20,12 +20,12 @@ int	ft_close_4(int fd1, int fd2, int fd3, int fd4)
 		close(fd2);
 	if (fd3 != -1)
 		close(fd3);
-	if (fd4 != -1)
-		close(fd4);
-	return (0);
+	if (ret_num != -2)
+		return (0);
+	return (ret_num);
 }
 
-void ft_redirect(int fd_in, int fd_out, int pp_close)
+void	ft_redirect(int fd_in, int fd_out, int pp_close)
 {
 	if (fd_in != -1)
 		dup2(fd_in, 0);
