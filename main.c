@@ -6,11 +6,38 @@
 /*   By: ggiannit <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/28 09:57:39 by ggiannit          #+#    #+#             */
-/*   Updated: 2023/01/03 14:00:31 by ggiannit         ###   ########.fr       */
+/*   Updated: 2023/01/03 18:12:33 by ggiannit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+
+int	ft_get_heredoc(char *delimiter)
+{
+	char	*nline;
+	size_t	delimiter_size;
+	int		fd_gg;
+
+	unlink("/tmp/ggiannit_ugly_pipex");
+	fd_gg = open("/tmp/ggiannit_ugly_pipex",
+			O_WRONLY | O_CREAT , 0644);
+	delimiter_size = ft_strlen(delimiter) + 1;
+	ft_putstr_fd("pipe heredoc> ", 1);
+	delimiter = ft_strjoin(delimiter, "\n");
+	nline = get_next_line(0);
+	while (ft_strncmp(delimiter, nline, delimiter_size))
+	{
+		ft_putstr_fd(nline, fd_gg);
+		ft_free_null(&nline);
+		ft_putstr_fd("pipe heredoc> ", 1);
+		while (!nline)
+			nline = get_next_line(0);
+	}
+	close(fd_gg);
+	ft_free_null(&nline);
+	ft_free_null(&delimiter);
+	return (open("/tmp/ggiannit_ugly_pipex", O_RDONLY));
+}
 
 int	ft_do_exec(char **cmd, int fd_in, int fd_out)
 {
@@ -18,10 +45,10 @@ int	ft_do_exec(char **cmd, int fd_in, int fd_out)
 	{
 		ft_redirect(fd_in, fd_out, -1);
 		execve(cmd[0], cmd, NULL);
-		perror("I guess it doesn't exist.. am I right? error");
+		perror("I guess it doesn't exist.. am I right? command non found");
 		close(fd_in);
 		close(fd_out);
-		exit(1);
+		exit(2);
 	}
 	close(fd_in);
 	close(fd_out);
@@ -41,6 +68,11 @@ int	ft_pipez(int ac, char **av, char **envp, int fd_write)
 		pp[1] = -1;
 		pp[0] = open(av[1], O_RDONLY);
 	}
+	else if (ac == 3 && !ft_strncmp("here_doc", av[1], 9))
+	{
+		pp[1] = -1;
+		pp[0] = ft_get_heredoc(av[2]);
+	}
 	else
 	{
 		pipe(pp);
@@ -58,89 +90,24 @@ int	main(int ac, char **av, char **envp)
 {
 	int	fd_out;
 	int	error;
+	int	is_here;
 
 	if (ac < 5)
 		return (1);
-	fd_out = open(av[--ac], O_WRONLY| O_TRUNC | O_CREAT, 0644);
-	if (fd_out == -1)
+	is_here = ft_strncmp("here_doc", av[1], 9);
+	if (!is_here && ac < 6)
 		return (1);
+	if (!is_here)
+		fd_out = open(av[--ac], O_WRONLY | O_CREAT | O_APPEND, 0644);
+	else
+		fd_out = open(av[--ac], O_WRONLY | O_TRUNC | O_CREAT, 0644);
+	if (fd_out == -1)
+		return (2);
 	error = ft_pipez((ac - 1), av, envp, fd_out);
 	close(fd_out);
+	if (!is_here)
+		unlink("/tmp/ggiannit_ugly_pipex");
 	if (!error)
-		return (1);
+		return (3);
 	return (0);
 }
-
-
-
-
-/*int	main(int ac, char **av, char **envp)
-{
-	int	pp[2];
-	char **cmd;
-	//ac vale 5, meglio tenersi il valore okay
-	//ne copio uno e e lo abbasso di 2, primo spot utile sara il 3 (ultimo cmd)
-	//.  fai il pipe su cui il parent scrive
-	//.  finche (copia > 1)	sforketta /parent/ abbasa di uno , legge dal pipe del children
-	//.  e 
-	
-// porcamadonna devo fare un disegno mi sta fottendo la testa
-	
-	if (ac < 4)
-		return (1);
-	pipe(pp);
-	if(!fork())
-	{
-		cmd = ft_getcmd(av[2], envp);
-		ft_do_exec(cmd, av[1], pp, 0);
-		//if (!fork())
-		//{
-		//	fd_in = open(av[1], O_RDONLY);
-	//	//	ft_redirect(fd_in, pp[1], pp[0]);
-	//		execve(cmd[0], cmd, NULL);
-	//		ft_close_4(pp[1], fd_in, -1, -1);
-	//	}
-	//	ft_close_4(pp[0], pp[1], -1, -1);
-	//	wait(NULL);
-	//	ft_free_matrix(cmd);
-	}
-	else
-	{
-		wait(NULL);
-		cmd = ft_getcmd(av[3], envp);
-		ft_do_exec(cmd, av[4], pp, 1);
-	//	if (!fork())
-	//	{
-	//		fd_out = open(av[4], O_WRONLY| O_TRUNC);
-	//		ft_redirect(pp[0], fd_out, pp[1]);
-	//		execve(cmd[0], cmd, NULL);
-	//		ft_close_4(pp[0], fd_out, -1, -1);
-	//	}
-	//	ft_close_4(pp[0], pp[1], -1, -1);
-	//	wait(NULL);
-	//	ft_free_matrix(cmd);
-	}
-}*/
-
-
-
-
-
-/*int main(int argc, char **argv, char **envp)
-{
-	if (argc < 2)
-		return (1);
-	//Print the command-line arguments
-	//printf("argc: %d\n", argc);
-	//for (int i = 0; i < argc; i++)
-	//	ft_printf("argv[%d]: %s\n", i, argv[i]);
-	// Print the environment variables
-	//for (int i = 0; envp[i]; i++)
-	//		printf("%s\n", envp[i]);
-	//ft_printf("\n");
-	//lol = ft_getenv(argv[1], envp);
-	//ft_printf("%s\n", lol);
-	//ft_printf("\n");
-	ft_execvp(argv[1], envp);
-    return 0;
-}*/
