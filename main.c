@@ -6,7 +6,7 @@
 /*   By: ggiannit <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/28 09:57:39 by ggiannit          #+#    #+#             */
-/*   Updated: 2022/12/30 17:21:00 by ggiannit         ###   ########.fr       */
+/*   Updated: 2023/01/03 10:39:55 by ggiannit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,11 +96,86 @@ int	main(int ac, char **av, char **envp)
 }*/
 
 
+/*
+	int fd_in;
+	int fd_out;
+	int t_a;
+	fd_in = open(av[1], O_RDONLY);
+	fd_out = open(av[ac--], O_WRONLY| O_TRUNC);
+	t_ac= ac;
 
 
+
+	int fd_write;
+		fd_write = open(av[ac--], O_WRONLY| O_TRUNC);
+*/
+
+
+void	ft_do_exec(char **cmd, int fd_in, int fd_out)
+{
+	if (!fork())
+	{
+		ft_redirect(fd_in, fd_out, -1);
+		execve(cmd[0], cmd, NULL);
+		perror("I guess it doesn't exist.. am I right? error:");
+		close(fd_in);
+		close(fd_out);
+	}
+	close(fd_in);
+	close(fd_out);
+	wait(NULL);
+	ft_free_matrix(cmd);
+}
+
+void	some_func(int ac, char **av, char **envp, int fd_write)
+{
+	int		fd_read;
+	int		pp[2];
+	char	**cmd;
+
+//	if (ac < 2)
+//		return ();
+	if (ac == 2)
+	{
+		//close(fd_read);
+		pp[1] = -1;
+		fd_read = open(av[1], O_RDONLY);
+	}
+	else
+	{
+		pipe(pp);
+		//if (!fork())
+		fd_read = pp[0];
+		some_func((ac - 1), av, envp, pp[1]);
+		//else
+		//	wait(NULL);
+	}
+	if (pp[1] != -1)
+		close(pp[1]);
+	//ft_redirect(pp[0], fd_write, pp[1]);
+	cmd = ft_getcmd(av[ac], envp);
+	ft_do_exec(cmd, fd_read, fd_write);
+}
 
 
 int	main(int ac, char **av, char **envp)
+{
+	int	fd_out;
+
+	if (ac < 5)
+		return (1);
+	fd_out = open(av[--ac], O_WRONLY| O_TRUNC);
+	if (fd_out == -1)
+		return (1);
+	some_func((ac - 1), av, envp, fd_out);
+	close(fd_out);
+	return (0);
+}
+
+
+
+
+/*int	main(int ac, char **av, char **envp)
 {
 	int	pp[2];
 	char **cmd;
@@ -119,34 +194,34 @@ int	main(int ac, char **av, char **envp)
 	{
 		cmd = ft_getcmd(av[2], envp);
 		ft_do_exec(cmd, av[1], pp, 0);
-		/*if (!fork())
-		{
-			fd_in = open(av[1], O_RDONLY);
-			ft_redirect(fd_in, pp[1], pp[0]);
-			execve(cmd[0], cmd, NULL);
-			ft_close_4(pp[1], fd_in, -1, -1);
-		}
-		ft_close_4(pp[0], pp[1], -1, -1);
-		wait(NULL);
-		ft_free_matrix(cmd);*/
+		//if (!fork())
+		//{
+		//	fd_in = open(av[1], O_RDONLY);
+	//	//	ft_redirect(fd_in, pp[1], pp[0]);
+	//		execve(cmd[0], cmd, NULL);
+	//		ft_close_4(pp[1], fd_in, -1, -1);
+	//	}
+	//	ft_close_4(pp[0], pp[1], -1, -1);
+	//	wait(NULL);
+	//	ft_free_matrix(cmd);
 	}
 	else
 	{
 		wait(NULL);
 		cmd = ft_getcmd(av[3], envp);
 		ft_do_exec(cmd, av[4], pp, 1);
-		/*if (!fork())
-		{
-			fd_out = open(av[4], O_WRONLY| O_TRUNC);
-			ft_redirect(pp[0], fd_out, pp[1]);
-			execve(cmd[0], cmd, NULL);
-			ft_close_4(pp[0], fd_out, -1, -1);
-		}
-		ft_close_4(pp[0], pp[1], -1, -1);
-		wait(NULL);
-		ft_free_matrix(cmd);*/
+	//	if (!fork())
+	//	{
+	//		fd_out = open(av[4], O_WRONLY| O_TRUNC);
+	//		ft_redirect(pp[0], fd_out, pp[1]);
+	//		execve(cmd[0], cmd, NULL);
+	//		ft_close_4(pp[0], fd_out, -1, -1);
+	//	}
+	//	ft_close_4(pp[0], pp[1], -1, -1);
+	//	wait(NULL);
+	//	ft_free_matrix(cmd);
 	}
-}
+}*/
 
 
 
