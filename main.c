@@ -6,7 +6,7 @@
 /*   By: ggiannit <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/28 09:57:39 by ggiannit          #+#    #+#             */
-/*   Updated: 2023/01/03 22:25:35 by ggiannit         ###   ########.fr       */
+/*   Updated: 2023/01/04 14:31:07 by ggiannit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,27 +16,29 @@ int	ft_do_exec(char **cmd, int fd_in, int fd_out, char **envp)
 {
 	int	stat;
 	int	pid;
+	int	pexit;
 
 	pid = fork();
 	if (!pid)
 	{
 		ft_redirect(fd_in, fd_out, -1);
-		stat = execve(cmd[0], cmd, envp);
-		perror("I guess it doesn't exist.. am I right? command non found");
+		execve(cmd[0], cmd, envp);
+		perror("I guess it doesn't exist.. am I right? command not found");
 		ft_close_n_ret(fd_in, fd_out, -1, -2);
-		exit(stat);
+		exit(127);
 	}
 	ft_close_n_ret(fd_in, fd_out, -1, -2);
-	if (waitpid(pid, &stat, WNOHANG))
-		stat = 2;
-	wait(NULL);
+	if (ft_strncmp("cat", &(cmd[0][ft_strlen(cmd[0]) - 3]), 4))
+		wait(&stat);
+	else
+		waitpid(pid, &stat, WNOHANG);
+	pexit = WEXITSTATUS(stat);
 	ft_free_matrix(cmd);
-	return (stat);
+	return (pexit);
 }
 
 int	ft_pipez(int ac, char **av, char **envp, int fd_write)
 {
-	int		error;
 	int		pp[2];
 	char	**cmd;
 
@@ -53,9 +55,7 @@ int	ft_pipez(int ac, char **av, char **envp, int fd_write)
 	else
 	{
 		pipe(pp);
-		error = ft_pipez((ac - 1), av, envp, pp[1]);
-		if (error)
-			return (ft_close_n_ret(pp[1], pp[0], fd_write, error));
+		ft_pipez((ac - 1), av, envp, pp[1]);
 	}
 	if (pp[1] != -1)
 		close(pp[1]);

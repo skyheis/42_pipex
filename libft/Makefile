@@ -6,7 +6,7 @@
 #    By: ggiannit <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/07 17:49:20 by ggiannit          #+#    #+#              #
-#    Updated: 2022/12/30 12:21:00 by ggiannit         ###   ########.fr        #
+#    Updated: 2023/01/04 14:10:38 by ggiannit         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,7 +38,7 @@ FLSRCS = ft_isalnum.c ft_isalpha.c ft_isascii.c ft_isdigit.c ft_isprint.c \
        ft_putchar_fd.c ft_putstr_fd.c ft_putendl_fd.c ft_putnbr_fd.c \
        ft_lstnew.c ft_lstadd_front.c ft_lstadd_back.c ft_lstdelone.c ft_lstclear.c \
        ft_lstsize.c ft_lstlast.c ft_lstiter.c ft_lstmap.c \
-	   ft_free_matrix.c
+	   ft_free_matrix.c ft_sleep_kinda.c
 
 PF_DIRSRCS = pfsrc/
 

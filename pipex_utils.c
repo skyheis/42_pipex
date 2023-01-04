@@ -6,7 +6,7 @@
 /*   By: ggiannit <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/30 12:21:29 by ggiannit          #+#    #+#             */
-/*   Updated: 2023/01/03 20:13:40 by ggiannit         ###   ########.fr       */
+/*   Updated: 2023/01/04 10:43:19 by ggiannit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ char	*ft_getpath(char *full_path, char *cmd)
 	char	*exec_path;
 
 	i = 0;
+	if (!access(cmd, X_OK))
+		return(NULL);
 	path_mat = ft_split(full_path, ':');
 	while (path_mat[i])
 	{
@@ -62,7 +64,10 @@ char	**ft_getcmd(char *cmd_str, char **envp)
 	cmd_mat = ft_split(cmd_str, ' ');
 	full_path = ft_getenv("PATH", envp);
 	full_path = ft_getpath(full_path, cmd_mat[0]);
-	ft_free_null(&cmd_mat[0]);
-	cmd_mat[0] = full_path;
+	if (full_path)
+	{
+		ft_free_null(&cmd_mat[0]);
+		cmd_mat[0] = full_path;
+	}
 	return (cmd_mat);
 }
