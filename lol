@@ -1,6 +1,5 @@
-ciao mi chiamo ggiannit
-salve mi chiamo fsalvett
-ciao mi chiamo mnegro
-ciao mi chiamo mabaffo
-salve mi chiamo mbozzi
-salve mi chiamo graiolo
+ciao sono gg
+ciao sono mm
+salve sono bb
+ciao sono oo
+salve sono cc

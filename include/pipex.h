@@ -6,7 +6,7 @@
 /*   By: ggiannit <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/28 09:55:24 by ggiannit          #+#    #+#             */
-/*   Updated: 2023/01/03 22:01:28 by ggiannit         ###   ########.fr       */
+/*   Updated: 2023/01/04 21:23:01 by ggiannit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 char	**ft_getcmd(char *cmd_str, char **envp);
 
 /* handle_fd_utils */
+int		ft_pipez_check_acav(int ac, char **av);
 int		ft_close_n_ret(int fd1, int fd2, int fd3, int ret_num);
 void	ft_redirect(int fd_in, int fd_out, int pp_close);
 
