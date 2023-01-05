@@ -6,48 +6,26 @@
 /*   By: ggiannit <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/30 12:39:48 by ggiannit          #+#    #+#             */
-/*   Updated: 2023/01/04 21:38:03 by ggiannit         ###   ########.fr       */
+/*   Updated: 2023/01/05 12:25:05 by ggiannit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-int	ft_fd_in_check(int fd_in, char *file)
+int	ft_fd_in_error(char **av)
 {
-	if (fd_in == -1)
-		printf("ggianit: no such file or directory: %s\n", file);
-	else
-	{
-		close(fd_in);
-		fd_in = 0;
-	}
-	return (fd_in);
-}
+	int		is_here;
+	char	*file;
 
-int	ft_pipez_check_acav(int ac, char **av)
-{
-	int	is_here;
-	int	fd_out;
-	int	in_status;
-
-	if (ac < 5)
-		return (-1);
 	is_here = ft_strncmp("here_doc", av[1], 9);
-	if (!is_here && ac < 6)
-		return (-1);
 	if (!is_here)
-	{
-		in_status = ft_fd_in_check(open(av[2], O_RDONLY), av[2]);
-		fd_out = open(av[--ac], O_WRONLY | O_CREAT | O_APPEND, 0644);
-	}
+		file = av[2];
 	else
-	{
-		in_status = ft_fd_in_check(open(av[1], O_RDONLY), av[1]);
-		fd_out = open(av[--ac], O_WRONLY | O_TRUNC | O_CREAT, 0644);
-	}
-	if (in_status == -1)
-		return (-1);
-	return (fd_out);
+		file = av[1];
+	ft_putstr_fd("ggianit: no such file or directory: ", 2);
+	ft_putstr_fd(file, 2);
+	ft_putstr_fd("\n", 2);
+	return (1);
 }
 
 int	ft_close_n_ret(int fd1, int fd2, int fd3, int ret_num)

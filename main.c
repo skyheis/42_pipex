@@ -6,7 +6,7 @@
 /*   By: ggiannit <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/28 09:57:39 by ggiannit          #+#    #+#             */
-/*   Updated: 2023/01/04 21:38:41 by ggiannit         ###   ########.fr       */
+/*   Updated: 2023/01/05 18:05:57 by ggiannit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,7 @@ int	ft_do_exec(char **cmd, int fd_in, int fd_out, char **envp)
 		exit(127);
 	}
 	ft_close_n_ret(fd_in, fd_out, -1, -2);
-	if (!ft_strncmp("cat", &(cmd[0][ft_strlen(cmd[0]) - 3]), 4))
-		waitpid(pid, &stat, WNOHANG);
-	else
-		wait(&stat);
+	wait(&stat);
 	pexit = WEXITSTATUS(stat);
 	ft_free_matrix(cmd);
 	return (pexit);
@@ -60,6 +57,8 @@ int	ft_pipez(int ac, char **av, char **envp, int fd_write)
 	}
 	if (pp[1] != -1)
 		close(pp[1]);
+	if (pp[0] == -1)
+		return (ft_fd_in_error(av));
 	cmd = ft_getcmd(av[ac], envp);
 	return (ft_do_exec(cmd, pp[0], fd_write, envp));
 }
@@ -67,14 +66,23 @@ int	ft_pipez(int ac, char **av, char **envp, int fd_write)
 int	main(int ac, char **av, char **envp)
 {
 	int	fd_out;
-	int	error;
+	int	is_here;
+	int	exit_code;
 
-	fd_out = ft_pipez_check_acav(ac, av);
+	if (ac < 5)
+		return (1);
+	is_here = ft_strncmp("here_doc", av[1], 9);
+	if (!is_here && ac < 6)
+		return (1);
+	if (!is_here)
+		fd_out = open(av[--ac], O_WRONLY | O_CREAT | O_APPEND, 0644);
+	else
+		fd_out = open(av[--ac], O_WRONLY | O_TRUNC | O_CREAT, 0644);
 	if (fd_out == -1)
 		return (1);
-	error = ft_pipez((ac - 1), av, envp, fd_out);
+	exit_code = ft_pipez((ac - 1), av, envp, fd_out);
 	close(fd_out);
 	if (!ft_strncmp("here_doc", av[1], 9))
 		unlink("/tmp/ggiannit_ugly_pipex");
-	return (error);
+	return (exit_code);
 }
